@@ -3,79 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Autenticação Simples</title>
-    
+    <title>Loja Online Demo</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f4f7f6; margin: 0; }
-        .box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 350px; display: none; box-sizing: border-box; }
-        .active { display: block; }
-        h2 { margin-top: 0; color: #333; text-align: center; }
-        label { display: block; margin-top: 10px; font-weight: bold; color: #555; }
-        input { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        :root { --primary: #007bff; --success: #28a745; --dark: #333; --light: #f4f7f6; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: var(--light); color: var(--dark); }
+        
+        /* Sistema de Ecrãs */
+        .screen { display: none; padding: 20px; box-sizing: border-box; }
+        .screen.active { display: block; }
+        
+        /* Formulários (Login / Registo) */
+        .auth-container { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+        .box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
+        .box h2 { margin-top: 0; text-align: center; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.2s; }
-        .btn-green { background: #28a745; }
-        .btn-green:hover { background: #218838; }
-        .btn-blue { background: #007bff; }
-        .btn-blue:hover { background: #0069d9; }
-        .link { text-align: center; margin-top: 15px; font-size: 14px; color: #007bff; cursor: pointer; text-decoration: underline; }
-        .success-msg { color: #28a745; text-align: center; font-size: 18px; font-weight: bold; }
+        .btn-blue { background: var(--primary); }
+        .btn-green { background: var(--success); }
+        .link { text-align: center; margin-top: 15px; color: var(--primary); cursor: pointer; text-decoration: underline; font-size: 14px; }
+
+        /* Navbar da Loja */
+        nav { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        nav .logo { font-size: 20px; font-weight: bold; color: var(--primary); }
+        nav .nav-buttons { display: flex; gap: 15px; align-items: center; }
+        nav .btn-cart { background: #f8f9fa; color: var(--dark); border: 1px solid #ddd; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        nav .btn-logout { background: #dc3545; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+
+        /* Montra de Produtos */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 30px auto; }
+        .product-card { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 15px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card img { max-width: 100%; height: 150px; object-fit: contain; background: #fafafa; border-radius: 4px; }
+        .product-card h3 { font-size: 16px; margin: 10px 0 5px 0; }
+        .product-card .price { font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 15px; }
+
+        /* Carrinho de Compras */
+        .cart-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .cart-total { font-size: 20px; font-weight: bold; text-align: right; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <!-- 1. ECRÃ DE REGISTO -->
-    <div id="screen-register" class="box active">
-        <h2>Criar Conta</h2>
-        <form id="form-register">
-            <label>Utilizador:</label>
-            <input type="text" id="reg-username" required placeholder="Ex: joao123">
-
-            <label>Palavra-passe:</label>
-            <input type="password" id="reg-password" required placeholder="Sua senha">
-
-            <button type="submit" class="btn-green">Finalizar Registo</button>
-        </form>
-        <div class="link" onclick="switchScreen('screen-login')">Já tenho conta? Fazer Login</div>
+    <div id="screen-register" class="screen active">
+        <div class="auth-container">
+            <div class="box">
+                <h2>Criar Conta</h2>
+                <form id="form-register">
+                    <label>Utilizador:</label>
+                    <input type="text" id="reg-username" required placeholder="Ex: joao123">
+                    <label>Palavra-passe:</label>
+                    <input type="password" id="reg-password" required placeholder="Escolha uma senha">
+                    <button type="submit" class="btn-green">Registar e Ir para a Loja</button>
+                </form>
+                <div class="link" onclick="switchScreen('screen-login')">Já tem conta? Entrar</div>
+            </div>
+        </div>
     </div>
 
     <!-- 2. ECRÃ DE LOGIN -->
-    <div id="screen-login" class="box">
-        <h2>Iniciar Sessão</h2>
-        <form id="form-login">
-            <label>Utilizador:</label>
-            <input type="text" id="login-username" required>
-
-            <label>Palavra-passe:</label>
-            <input type="password" id="login-password" required>
-
-            <button type="submit" class="btn-blue">Entrar</button>
-        </form>
-        <div class="link" onclick="switchScreen('screen-register')">Não tem conta? Registe-se</div>
+    <div id="screen-login" class="screen">
+        <div class="auth-container">
+            <div class="box">
+                <h2>Iniciar Sessão</h2>
+                <form id="form-login">
+                    <label>Utilizador:</label>
+                    <input type="text" id="login-username" required>
+                    <label>Palavra-passe:</label>
+                    <input type="password" id="login-password" required>
+                    <button type="submit" class="btn-blue">Entrar</button>
+                </form>
+                <div class="link" onclick="switchScreen('screen-register')">Não tem conta? Crie uma</div>
+            </div>
+        </div>
     </div>
 
-    <!-- 3. ECRÃ DE SUCESSO (ÁREA RESTRITA) -->
-    <div id="screen-dashboard" class="box">
-        <h2>🎉 Bem-vindo!</h2>
-        <p class="success-msg">Login efetuado com sucesso!</p>
-        <p style="text-align: center; color: #555;">Entrou com sucesso no sistema tradicional por palavra-passe.</p>
-        <button onclick="logout()" class="btn-blue" style="margin-top: 20px;">Sair da Conta</button>
+    <!-- 3. ECRÃ DA LOJA (CATÁLOGO) -->
+    <div id="screen-shop" class="screen">
+        <nav>
+            <div class="logo">⚡ MegaLoja</div>
+            <div class="nav-buttons">
+                <span id="user-greeting">Olá!</span>
+                <button class="btn-cart" onclick="switchScreen('screen-cart')">🛒 Carrinho (<span id="cart-count">0</span>)</button>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </nav>
+        
+        <h2 style="text-align: center; margin-top: 30px;">Os Nossos Produtos</h2>
+        <div class="products-grid" id="products-container"></div>
     </div>
 
-    <!-- LÓGICA DE SIMULAÇÃO DO SISTEMA -->
+    <!-- 4. ECRÃ DO CARRINHO DE COMPRAS -->
+    <div id="screen-cart" class="screen">
+        <nav>
+            <div class="logo" style="cursor:pointer;" onclick="switchScreen('screen-shop')">⬅️ Voltar à Loja</div>
+        </nav>
+        
+        <div class="cart-container">
+            <h2>O seu Carrinho</h2>
+            <div id="cart-items-list"></div>
+            <div class="cart-total">Total: <span id="cart-total-value">0.00</span>€</div>
+            <button class="btn-green" style="margin-top: 20px;" onclick="checkout()">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <!-- LÓGICA DE FUNCIONAMENTO (JAVASCRIPT) -->
     <script>
-        // "Base de dados" simulada no navegador (LocalStorage)
+        // Base de dados e Estado Local simulados
         const db = {
             getUser: () => JSON.parse(localStorage.getItem('user_db')),
             setUser: (user) => localStorage.setItem('user_db', JSON.stringify(user))
         };
+        
+        let currentUser = null;
+        let cart = [];
 
-        // Função para alternar entre ecrãs
+        // Catálogo de Produtos Fictícios
+        const products = [
+            { id: 1, name: "Smartphone Pro Max", price: 899.99, img: "https://unsplash.com" },
+            { id: 2, name: "Auscultadores Wireless", price: 149.99, img: "https://unsplash.com" },
+            { id: 3, name: "Relógio Inteligente Desportivo", price: 199.99, img: "https://unsplash.com" },
+            { id: 4, name: "Computador Portátil Slim", price: 1199.99, img: "https://unsplash.com" }
+        ];
+
+        // Alternar dinamicamente entre ecrãs
         function switchScreen(screenId) {
-            document.querySelectorAll('.box').forEach(box => box.classList.remove('active'));
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+            if(screenId === 'screen-shop') renderProducts();
+            if(screenId === 'screen-cart') renderCart();
         }
 
-        // AÇÃO: Registo de Utilizador
+        // Submissão do Registo
         document.getElementById('form-register').addEventListener('submit', function(e) {
             e.preventDefault();
             const user = {
@@ -83,11 +143,12 @@
                 password: document.getElementById('reg-password').value
             };
             db.setUser(user);
-            alert('Conta criada com sucesso!');
-            switchScreen('screen-login');
+            currentUser = user.username;
+            document.getElementById('user-greeting').innerText = `Olá, ${currentUser}!`;
+            switchScreen('screen-shop');
         });
 
-        // AÇÃO: Login Tradicional
+        // Submissão do Login
         document.getElementById('form-login').addEventListener('submit', function(e) {
             e.preventDefault();
             const userSaved = db.getUser();
@@ -95,18 +156,40 @@
             const passIn = document.getElementById('login-password').value;
 
             if (userSaved && userSaved.username === userIn && userSaved.password === passIn) {
-                // Credenciais corretas, entra direto no dashboard
-                switchScreen('screen-dashboard');
+                currentUser = userSaved.username;
+                document.getElementById('user-greeting').innerText = `Olá, ${currentUser}!`;
+                switchScreen('screen-shop');
             } else {
-                alert('Utilizador ou Palavra-passe incorretos!');
+                alert('Credenciais incorretas!');
             }
         });
 
-        // AÇÃO: Terminar Sessão
-        function logout() {
-            document.getElementById('form-login').reset();
-            switchScreen('screen-login');
+        // Renderizar a Montra de Produtos
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+            products.forEach(p => {
+                container.innerHTML += `
+                    <div class="product-card">
+                        <img src="${p.img}" alt="${p.name}">
+                        <h3>${p.name}</h3>
+                        <div class="price">${p.price.toFixed(2)}€</div>
+                        <button class="btn-blue" onclick="addToCart(${p.id})">Adicionar</button>
+                    </div>
+                `;
+            });
         }
-    </script>
-</body>
-</html>
+
+        // Adicionar Produto ao Carrinho
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            cart.push(product);
+            document.getElementById('cart-count').innerText = cart.length;
+            alert(`${product.name} adicionado ao carrinho!`);
+        }
+
+        // Renderizar Detalhes do Carrinho
+        function renderCart() {
+            const container = document.getElementById('cart-items-list');
+            container.innerHTML = '';
+                                                               
