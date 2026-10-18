@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Autenticação Simples</title>
+    
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f4f7f6; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 350px; display: none; box-sizing: border-box; }
+        .active { display: block; }
+        h2 { margin-top: 0; color: #333; text-align: center; }
+        label { display: block; margin-top: 10px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.2s; }
+        .btn-green { background: #28a745; }
+        .btn-green:hover { background: #218838; }
+        .btn-blue { background: #007bff; }
+        .btn-blue:hover { background: #0069d9; }
+        .link { text-align: center; margin-top: 15px; font-size: 14px; color: #007bff; cursor: pointer; text-decoration: underline; }
+        .success-msg { color: #28a745; text-align: center; font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. ECRÃ DE REGISTO -->
+    <div id="screen-register" class="box active">
+        <h2>Criar Conta</h2>
+        <form id="form-register">
+            <label>Utilizador:</label>
+            <input type="text" id="reg-username" required placeholder="Ex: joao123">
+
+            <label>Palavra-passe:</label>
+            <input type="password" id="reg-password" required placeholder="Sua senha">
+
+            <button type="submit" class="btn-green">Finalizar Registo</button>
+        </form>
+        <div class="link" onclick="switchScreen('screen-login')">Já tenho conta? Fazer Login</div>
+    </div>
+
+    <!-- 2. ECRÃ DE LOGIN -->
+    <div id="screen-login" class="box">
+        <h2>Iniciar Sessão</h2>
+        <form id="form-login">
+            <label>Utilizador:</label>
+            <input type="text" id="login-username" required>
+
+            <label>Palavra-passe:</label>
+            <input type="password" id="login-password" required>
+
+            <button type="submit" class="btn-blue">Entrar</button>
+        </form>
+        <div class="link" onclick="switchScreen('screen-register')">Não tem conta? Registe-se</div>
+    </div>
+
+    <!-- 3. ECRÃ DE SUCESSO (ÁREA RESTRITA) -->
+    <div id="screen-dashboard" class="box">
+        <h2>🎉 Bem-vindo!</h2>
+        <p class="success-msg">Login efetuado com sucesso!</p>
+        <p style="text-align: center; color: #555;">Entrou com sucesso no sistema tradicional por palavra-passe.</p>
+        <button onclick="logout()" class="btn-blue" style="margin-top: 20px;">Sair da Conta</button>
+    </div>
+
+    <!-- LÓGICA DE SIMULAÇÃO DO SISTEMA -->
+    <script>
+        // "Base de dados" simulada no navegador (LocalStorage)
+        const db = {
+            getUser: () => JSON.parse(localStorage.getItem('user_db')),
+            setUser: (user) => localStorage.setItem('user_db', JSON.stringify(user))
+        };
+
+        // Função para alternar entre ecrãs
+        function switchScreen(screenId) {
+            document.querySelectorAll('.box').forEach(box => box.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // AÇÃO: Registo de Utilizador
+        document.getElementById('form-register').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = {
+                username: document.getElementById('reg-username').value.trim(),
+                password: document.getElementById('reg-password').value
+            };
+            db.setUser(user);
+            alert('Conta criada com sucesso!');
+            switchScreen('screen-login');
+        });
+
+        // AÇÃO: Login Tradicional
+        document.getElementById('form-login').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userSaved = db.getUser();
+            const userIn = document.getElementById('login-username').value.trim();
+            const passIn = document.getElementById('login-password').value;
+
+            if (userSaved && userSaved.username === userIn && userSaved.password === passIn) {
+                // Credenciais corretas, entra direto no dashboard
+                switchScreen('screen-dashboard');
+            } else {
+                alert('Utilizador ou Palavra-passe incorretos!');
+            }
+        });
+
+        // AÇÃO: Terminar Sessão
+        function logout() {
+            document.getElementById('form-login').reset();
+            switchScreen('screen-login');
+        }
+    </script>
+</body>
+</html>
